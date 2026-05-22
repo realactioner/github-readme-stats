@@ -3,8 +3,8 @@
 import { renderError } from "./render.js";
 import { getWhitelist, getGistWhitelist } from "./envs.js";
 
-const NOT_WHITELISTED_USERNAME_MESSAGE = "This username is not whitelisted";
-const NOT_WHITELISTED_GIST_MESSAGE = "This gist ID is not whitelisted";
+const NOT_ALLOWED_USERNAME_MESSAGE = "User not allowed";
+const NOT_ALLOWED_GIST_MESSAGE = "Gist not allowed";
 
 /**
  * Guards access using whitelist.
@@ -26,10 +26,8 @@ const guardAccess = ({ res, id, type, colors }) => {
   const whitelist = getWhitelist();
   const gistWhitelist = getGistWhitelist();
   const currentWhitelist = type === "gist" ? gistWhitelist : whitelist;
-  const notWhitelistedMsg =
-    type === "gist"
-      ? NOT_WHITELISTED_GIST_MESSAGE
-      : NOT_WHITELISTED_USERNAME_MESSAGE;
+  const notAllowedMsg =
+    type === "gist" ? NOT_ALLOWED_GIST_MESSAGE : NOT_ALLOWED_USERNAME_MESSAGE;
 
   const normalizedId = type === "username" ? id?.toLowerCase() : id;
 
@@ -37,8 +35,7 @@ const guardAccess = ({ res, id, type, colors }) => {
     if (Array.isArray(currentWhitelist) && !currentWhitelist.includes(id)) {
       const result = res.send(
         renderError({
-          message: notWhitelistedMsg,
-          secondaryMessage: "Please deploy your own instance",
+          message: notAllowedMsg,
           renderOptions: {
             ...colors,
             show_repo_link: false,
@@ -53,8 +50,7 @@ const guardAccess = ({ res, id, type, colors }) => {
   ) {
     const result = res.send(
       renderError({
-        message: notWhitelistedMsg,
-        secondaryMessage: "Please deploy your own instance",
+        message: notAllowedMsg,
         renderOptions: {
           ...colors,
           show_repo_link: false,

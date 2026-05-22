@@ -176,8 +176,7 @@ describe("Test /api/pin", () => {
     expect(res.setHeader).toHaveBeenCalledWith("Content-Type", "image/svg+xml");
     expect(res.send).toHaveBeenCalledWith(
       renderError({
-        message: "This username is not whitelisted",
-        secondaryMessage: "Please deploy your own instance",
+        message: "User not allowed",
         renderOptions: { show_repo_link: false },
       }),
     );
