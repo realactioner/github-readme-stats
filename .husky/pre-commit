@@ -1,3 +1,4 @@
-npm test
-npm run lint
-npx lint-staged
+#!/bin/sh
+node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage
+node node_modules/eslint/bin/eslint.js --max-warnings 0 "./src/**/*.js" "./scripts/**/*.js" "./tests/**/*.js" "./api/**/*.js" "./themes/**/*.js"
+node node_modules/lint-staged/bin/lint-staged.js
