@@ -31,7 +31,12 @@ const guardAccess = ({ res, id, type, colors }) => {
       ? NOT_WHITELISTED_GIST_MESSAGE
       : NOT_WHITELISTED_USERNAME_MESSAGE;
 
-  if (Array.isArray(currentWhitelist) && !currentWhitelist.includes(id)) {
+  const normalizedId = type === "username" ? id?.toLowerCase() : id;
+
+  if (
+    Array.isArray(currentWhitelist) &&
+    !currentWhitelist.includes(normalizedId)
+  ) {
     const result = res.send(
       renderError({
         message: notWhitelistedMsg,
@@ -48,7 +53,7 @@ const guardAccess = ({ res, id, type, colors }) => {
   if (
     type === "username" &&
     currentWhitelist === undefined &&
-    blacklist.includes(id)
+    blacklist.includes(normalizedId)
   ) {
     const result = res.send(
       renderError({
