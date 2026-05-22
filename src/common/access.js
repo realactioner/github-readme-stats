@@ -1,15 +1,13 @@
 // @ts-check
 
 import { renderError } from "./render.js";
-import { blacklist } from "./blacklist.js";
-import { whitelist, gistWhitelist } from "./envs.js";
+import { getWhitelist, getGistWhitelist } from "./envs.js";
 
 const NOT_WHITELISTED_USERNAME_MESSAGE = "This username is not whitelisted";
 const NOT_WHITELISTED_GIST_MESSAGE = "This gist ID is not whitelisted";
-const BLACKLISTED_MESSAGE = "This username is blacklisted";
 
 /**
- * Guards access using whitelist/blacklist.
+ * Guards access using whitelist.
  *
  * @param {Object} args The parameters object.
  * @param {any} args.res The response object.
@@ -25,6 +23,8 @@ const guardAccess = ({ res, id, type, colors }) => {
     );
   }
 
+  const whitelist = getWhitelist();
+  const gistWhitelist = getGistWhitelist();
   const currentWhitelist = type === "gist" ? gistWhitelist : whitelist;
   const notWhitelistedMsg =
     type === "gist"
@@ -33,31 +33,27 @@ const guardAccess = ({ res, id, type, colors }) => {
 
   const normalizedId = type === "username" ? id?.toLowerCase() : id;
 
-  if (
-    Array.isArray(currentWhitelist) &&
-    !currentWhitelist.includes(normalizedId)
+  if (type === "gist") {
+    if (Array.isArray(currentWhitelist) && !currentWhitelist.includes(id)) {
+      const result = res.send(
+        renderError({
+          message: notWhitelistedMsg,
+          secondaryMessage: "Please deploy your own instance",
+          renderOptions: {
+            ...colors,
+            show_repo_link: false,
+          },
+        }),
+      );
+      return { isPassed: false, result };
+    }
+  } else if (
+    id &&
+    (!Array.isArray(whitelist) || !whitelist.includes(normalizedId))
   ) {
     const result = res.send(
       renderError({
         message: notWhitelistedMsg,
-        secondaryMessage: "Please deploy your own instance",
-        renderOptions: {
-          ...colors,
-          show_repo_link: false,
-        },
-      }),
-    );
-    return { isPassed: false, result };
-  }
-
-  if (
-    type === "username" &&
-    currentWhitelist === undefined &&
-    blacklist.includes(normalizedId)
-  ) {
-    const result = res.send(
-      renderError({
-        message: BLACKLISTED_MESSAGE,
         secondaryMessage: "Please deploy your own instance",
         renderOptions: {
           ...colors,

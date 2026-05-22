@@ -10,7 +10,7 @@ describe("envs whitelist", () => {
 
   it("parses WHITELIST with trimming and lowercasing", async () => {
     process.env.WHITELIST = "Alice, bob , Charlie";
-    const { whitelist } = await import("../src/common/envs.js");
-    expect(whitelist).toEqual(["alice", "bob", "charlie"]);
+    const { getWhitelist } = await import("../src/common/envs.js");
+    expect(getWhitelist()).toEqual(["alice", "bob", "charlie"]);
   });
 });

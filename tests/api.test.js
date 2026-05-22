@@ -15,6 +15,7 @@ import { calculateRank } from "../src/calculateRank.js";
 import { renderStatsCard } from "../src/cards/stats.js";
 import { renderError } from "../src/common/render.js";
 import { CACHE_TTL, DURATIONS } from "../src/common/cache.js";
+import { applyTestWhitelist } from "./testEnv.js";
 
 /**
  * @type {import("../src/fetchers/stats").StatsData}
@@ -108,6 +109,7 @@ const faker = (query, data) => {
 };
 
 beforeEach(() => {
+  applyTestWhitelist();
   process.env.CACHE_SECONDS = undefined;
 });
 
@@ -356,7 +358,8 @@ describe("Test /api/", () => {
     );
   });
 
-  it("should render error card if username in blacklist", async () => {
+  it("should render error card if username is not whitelisted", async () => {
+    process.env.WHITELIST = "anuraghazra";
     const { req, res } = faker({ username: "renovate-bot" }, data_stats);
 
     await api(req, res);
@@ -364,7 +367,7 @@ describe("Test /api/", () => {
     expect(res.setHeader).toHaveBeenCalledWith("Content-Type", "image/svg+xml");
     expect(res.send).toHaveBeenCalledWith(
       renderError({
-        message: "This username is blacklisted",
+        message: "This username is not whitelisted",
         secondaryMessage: "Please deploy your own instance",
         renderOptions: { show_repo_link: false },
       }),

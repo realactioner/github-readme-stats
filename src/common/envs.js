@@ -30,16 +30,27 @@ const parseUsernameWhitelist = (value) => {
   return items?.map((username) => username.toLowerCase());
 };
 
-const whitelist = parseUsernameWhitelist(process.env.WHITELIST);
+/**
+ * Returns the current username whitelist from the environment.
+ *
+ * @returns {string[] | undefined} Lowercased usernames, or undefined when unset.
+ */
+const getWhitelist = () => parseUsernameWhitelist(process.env.WHITELIST);
 
-const gistWhitelist = parseCommaSeparatedList(process.env.GIST_WHITELIST);
+/**
+ * Returns the current gist whitelist from the environment.
+ *
+ * @returns {string[] | undefined} Gist IDs, or undefined when unset.
+ */
+const getGistWhitelist = () =>
+  parseCommaSeparatedList(process.env.GIST_WHITELIST);
 
 const excludeRepositories =
   parseCommaSeparatedList(process.env.EXCLUDE_REPO) ?? [];
 
 export {
-  whitelist,
-  gistWhitelist,
+  getWhitelist,
+  getGistWhitelist,
   excludeRepositories,
   parseCommaSeparatedList,
   parseUsernameWhitelist,

@@ -1,6 +1,13 @@
 // @ts-check
 
-import { afterEach, describe, expect, it, jest } from "@jest/globals";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from "@jest/globals";
 import "@testing-library/jest-dom";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
@@ -8,6 +15,7 @@ import pin from "../api/pin.js";
 import { renderRepoCard } from "../src/cards/repo.js";
 import { renderError } from "../src/common/render.js";
 import { CACHE_TTL, DURATIONS } from "../src/common/cache.js";
+import { applyTestWhitelist } from "./testEnv.js";
 
 const data_repo = {
   repository: {
@@ -35,6 +43,10 @@ const data_user = {
 };
 
 const mock = new MockAdapter(axios);
+
+beforeEach(() => {
+  applyTestWhitelist();
+});
 
 afterEach(() => {
   mock.reset();
@@ -145,7 +157,8 @@ describe("Test /api/pin", () => {
     );
   });
 
-  it("should render error card if username in blacklist", async () => {
+  it("should render error card if username is not whitelisted", async () => {
+    process.env.WHITELIST = "anuraghazra";
     const req = {
       query: {
         username: "renovate-bot",
@@ -163,7 +176,7 @@ describe("Test /api/pin", () => {
     expect(res.setHeader).toHaveBeenCalledWith("Content-Type", "image/svg+xml");
     expect(res.send).toHaveBeenCalledWith(
       renderError({
-        message: "This username is blacklisted",
+        message: "This username is not whitelisted",
         secondaryMessage: "Please deploy your own instance",
         renderOptions: { show_repo_link: false },
       }),

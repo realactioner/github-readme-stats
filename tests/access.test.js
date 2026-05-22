@@ -6,6 +6,21 @@ describe("guardAccess whitelist", () => {
     jest.resetModules();
   });
 
+  it("blocks all usernames when WHITELIST is unset", async () => {
+    const { guardAccess } = await import("../src/common/access.js");
+    const res = { send: jest.fn() };
+
+    const access = guardAccess({
+      res,
+      id: "anyuser",
+      type: "username",
+      colors: {},
+    });
+
+    expect(access.isPassed).toBe(false);
+    expect(res.send).toHaveBeenCalled();
+  });
+
   it("blocks usernames that are not whitelisted", async () => {
     process.env.WHITELIST = "alloweduser";
     const { guardAccess } = await import("../src/common/access.js");

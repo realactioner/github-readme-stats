@@ -1,10 +1,18 @@
-import { afterEach, describe, expect, it, jest } from "@jest/globals";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from "@jest/globals";
 import "@testing-library/jest-dom";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 import wakatime from "../api/wakatime.js";
 import { renderWakatimeCard } from "../src/cards/wakatime.js";
 import { CACHE_TTL, DURATIONS } from "../src/common/cache.js";
+import { applyTestWhitelist } from "./testEnv.js";
 
 const wakaTimeData = {
   data: {
@@ -99,6 +107,10 @@ const wakaTimeData = {
 };
 
 const mock = new MockAdapter(axios);
+
+beforeEach(() => {
+  applyTestWhitelist();
+});
 
 afterEach(() => {
   mock.reset();

@@ -954,7 +954,7 @@ GitHub Readme Stats provides several environment variables that can be used to c
     </tr>
     <tr>
       <td><code>WHITELIST</code></td>
-      <td>A comma-separated list of GitHub usernames that are allowed to access your instance. If this variable is not set, all usernames are allowed.</td>
+      <td>A comma-separated list of GitHub usernames that are allowed to access your instance. <strong>Required</strong> for self-hosted instances: if unset, all usernames are blocked.</td>
       <td>Comma-separated GitHub usernames</td>
     </tr>
     <tr>
